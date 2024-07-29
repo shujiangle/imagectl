@@ -5,4 +5,5 @@ var (
 	Srcname     string
 	Srcpassword string
 	Catproname  string
+	File        string
 )

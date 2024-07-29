@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"imagectl/pkg/harborapi"
 	"log"
+	"os"
 	"strings"
 )
 
@@ -74,4 +75,45 @@ func Getrepoonly(url string, username string, password string, catprojectname st
 			}
 		}
 	}
+}
+
+func Getrepoall(url string, username string, password string, imagesavefile string) {
+	url = strings.TrimSuffix(url, "/")
+	client := GetProjectsUrl(url, username, password)
+	projects, err := client.GetProjects()
+	if err != nil {
+		log.Fatalf("Error fetching projects: %v", err)
+	}
+
+	file, err := os.OpenFile(imagesavefile, os.O_CREATE|os.O_EXCL|os.O_WRONLY, 0666)
+	if err != nil {
+		fmt.Println("Error opening file:", err)
+		return
+	}
+
+	for _, project := range projects {
+		repositories, err := client.GetRepositories(project.ProjectID)
+		if err != nil {
+			log.Fatalf("Error fetching repositories for project ID  %v", err)
+		}
+
+		for _, repo := range repositories {
+			repositoriestag, err := client.GetRepositoriesTag(repo.Name)
+			if err != nil {
+				log.Fatal("%s存在", repositoriestag)
+			}
+
+			for _, tag := range repositoriestag {
+				tagdesc := fmt.Sprintf("%v/%s:%s\n", url, repo.Name, tag.Name)
+				fmt.Printf(tagdesc)
+				_, err = file.WriteString(tagdesc)
+				if err != nil {
+					fmt.Printf("文件写入失败: %s\n", err)
+				}
+			}
+
+		}
+		defer file.Close()
+	}
+
 }
