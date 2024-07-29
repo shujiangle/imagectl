@@ -113,7 +113,7 @@ func Getrepoall(url string, username string, password string, imagesavefile stri
 			}
 
 		}
-		defer file.Close()
-	}
 
+	}
+	defer file.Close()
 }
