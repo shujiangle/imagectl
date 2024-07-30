@@ -82,7 +82,7 @@ func (c *Client) GetProjects() ([]Project, error) {
 		return nil, err
 	}
 
-	//fmt.Printf("projects:%v", projects)
+	//fmt.Printf("项目名：%v,项目类型:%T\n", projects, projects)
 	return projects, nil
 }
 
@@ -97,7 +97,7 @@ func (c *Client) GetRepositories(projectID int) ([]Repository, error) {
 	if err := c.doRequest(req, &repositories); err != nil {
 		return nil, err
 	}
-
+	//fmt.Printf("仓库名：%v,仓库类型:%T\n", repositories, repositories)
 	return repositories, nil
 }
 
@@ -112,6 +112,6 @@ func (c *Client) GetRepositoriesTag(repositoriestag string) ([]Repositorytag, er
 	if err := c.doRequest(req, &tags); err != nil {
 		return nil, err
 	}
-
+	//fmt.Printf("仓库版本：%v,仓库版本类型:%T\n", tags, tags)
 	return tags, nil
 }

@@ -2,7 +2,9 @@ package imageaction
 
 import (
 	"fmt"
+	"github.com/fatih/color"
 	"imagectl/pkg/harborapi"
+	"imagectl/pkg/migrate"
 	"log"
 	"os"
 	"strings"
@@ -116,4 +118,58 @@ func Getrepoall(url string, username string, password string, imagesavefile stri
 
 	}
 	defer file.Close()
+}
+
+func Migrepoonly(url, username, password, catprojectname, dsturl, dstusername, dstpassword string) {
+	url = strings.TrimSuffix(url, "/")
+	client := GetProjectsUrl(url, username, password)
+	projects, err := client.GetProjects()
+	if err != nil {
+		log.Fatalf("Error fetching projects: %v", err)
+	}
+
+	if !containsString(projects, catprojectname) {
+		log.Fatal("查询的项目，不存在，请检查")
+	}
+	for _, project := range projects {
+		if project.Name == catprojectname {
+			repositories, err := client.GetRepositories(project.ProjectID)
+			if err != nil {
+				log.Fatalf("Error fetching repositories for project ID  %v", err)
+			}
+
+			//fmt.Printf("%v项目的镜像列表:\n", catprojectname)
+			for _, repo := range repositories {
+				repositoriestag, err := client.GetRepositoriesTag(repo.Name)
+				if err != nil {
+					log.Fatal("%s存在", repositoriestag)
+				}
+
+				for _, tag := range repositoriestag {
+					changeurl := migrate.ExtractIP(url)
+					changedsturl := migrate.ExtractIP(dsturl)
+					changeurl = fmt.Sprintf("%v/%s:%s", changeurl, repo.Name, tag.Name)
+
+					parts := strings.Split(repo.Name, "/")
+					changedsturl = fmt.Sprintf("%v/%s:%s", changedsturl, parts[1], tag.Name)
+					cmdshell := fmt.Sprintf("skopeo copy --policy=policy.json --src-creds='%s:%s' --dest-creds='%s:%s' --src-tls-verify=%t --dest-tls-verify=%t docker://%s docker://%s",
+						username, password, dstusername, dstpassword, false, false, changeurl, changedsturl)
+
+					//fmt.Printf("%s\n", cmdshell)
+					//migrate.Command(cmdshell)
+					//fmt.Printf(tagdesc)
+					//fmt.Printf("%v\n\n", cmdshell)
+
+					fmt.Printf("开启迁移   ")
+					blue := color.New(color.FgBlue)
+					_, _ = blue.Print(changeurl)
+					fmt.Printf("   目标地址")
+					color.Blue(changedsturl)
+					migrate.Command(cmdshell)
+					fmt.Println()
+				}
+
+			}
+		}
+	}
 }

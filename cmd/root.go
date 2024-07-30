@@ -41,6 +41,7 @@ func init() {
 
 	rootCmd.PersistentFlags().StringVarP(&settings.Srcname, "src-username", "u", "admin", "输入源地址的用户名")
 	rootCmd.PersistentFlags().StringVarP(&settings.Srcpassword, "src-password", "p", "Harbor12345", "输入源地址的密码")
-	rootCmd.PersistentFlags().StringVarP(&settings.Srcurl, "src-url", "l", "192.168.153.11", "输入源地址的URL")
+	rootCmd.PersistentFlags().StringVarP(&settings.Srcurl, "src-url", "l", "http://192.168.153.11", "输入源地址的URL")
 	rootCmd.PersistentFlags().StringVarP(&settings.File, "file", "f", "imageList.txt", "输入你要保存到哪个文件")
+	rootCmd.PersistentFlags().StringVarP(&settings.Catprojectname, "catprojectname", "c", "library", "输入要查询或者迁移的项目名")
 }

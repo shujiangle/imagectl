@@ -15,8 +15,7 @@ var getrepoonlyCmd = &cobra.Command{
 	Short: "查询某个项目的镜像列表",
 	Long:  `查询某个项目的镜像列表`,
 	Run: func(cmd *cobra.Command, args []string) {
-		catprojectname, _ := cmd.Flags().GetString("catprojectname")
-		imageaction.Getrepoonly(settings.Srcurl, settings.Srcname, settings.Srcpassword, catprojectname)
+		imageaction.Getrepoonly(settings.Srcurl, settings.Srcname, settings.Srcpassword, settings.Catprojectname)
 	},
 }
 
@@ -31,5 +30,5 @@ func init() {
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
-	getrepoonlyCmd.Flags().StringP("catprojectname", "c", "library", "输入要查询的项目")
+	//getrepoonlyCmd.Flags().StringP("catprojectname", "c", "library", "输入要查询的项目")
 }

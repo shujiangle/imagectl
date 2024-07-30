@@ -1,0 +1,10 @@
+http://192.168.153.11/library/centos:latest
+http://192.168.153.11/library/redis:4.0
+http://192.168.153.11/library/socks5:latest
+http://192.168.153.11/test01/centos:v2
+http://192.168.153.11/test01/centos:v3
+http://192.168.153.11/test01/harbor-db:v1.9.1
+http://192.168.153.11/test01/redis:3.0
+http://192.168.153.11/test01/redis:3.2
+http://192.168.153.11/test01/redis:4.0
+http://192.168.153.11/test01/redis:3.3

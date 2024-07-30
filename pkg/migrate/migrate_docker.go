@@ -58,9 +58,9 @@ func read(std io.ReadCloser, wg *sync.WaitGroup) {
 	for scanner.Scan() {
 		fmt.Println("标准输出:", scanner.Text())
 	}
-	if err := scanner.Err(); err != nil {
-		fmt.Println("读取标准输出出错:", err)
-	}
+	//if err := scanner.Err(); err != nil && std != nil {
+	//	fmt.Println("读取标准输出出错:", err)
+	//}
 }
 
 // 去除url的 https:// 或者http://
@@ -72,3 +72,5 @@ func ExtractIP(url string) string {
 	}
 	return parts[0]
 }
+
+//
