@@ -57,6 +57,8 @@ func Getrepoonly(url string, username string, password string, catprojectname st
 	}
 	for _, project := range projects {
 		if project.Name == catprojectname {
+			allnumbers := Getrepoonlynumber(client, project.ProjectID)
+			fmt.Printf("%v项目的仓库总数是%v\n", catprojectname, allnumbers)
 			repositories, err := client.GetRepositories(project.ProjectID)
 			if err != nil {
 				log.Fatalf("Error fetching repositories for project ID  %v", err)
@@ -133,18 +135,22 @@ func Migrepoonly(url, username, password, catprojectname, dsturl, dstusername, d
 	}
 	for _, project := range projects {
 		if project.Name == catprojectname {
+			allnumbers := Getrepoonlynumber(client, project.ProjectID)
+			fmt.Println("需要迁移的仓库总数是", allnumbers)
 			repositories, err := client.GetRepositories(project.ProjectID)
+			//fmt.Printf("仓库名:%v, 仓库版本:%T", repositories)
 			if err != nil {
 				log.Fatalf("Error fetching repositories for project ID  %v", err)
 			}
 
+			counts := 0
 			//fmt.Printf("%v项目的镜像列表:\n", catprojectname)
 			for _, repo := range repositories {
 				repositoriestag, err := client.GetRepositoriesTag(repo.Name)
+				//fmt.Printf("仓库名:%v, 仓库版本:%T", repositories)
 				if err != nil {
 					log.Fatal("%s存在", repositoriestag)
 				}
-
 				for _, tag := range repositoriestag {
 					changeurl := migrate.ExtractIP(url)
 					changedsturl := migrate.ExtractIP(dsturl)
@@ -159,8 +165,8 @@ func Migrepoonly(url, username, password, catprojectname, dsturl, dstusername, d
 					//migrate.Command(cmdshell)
 					//fmt.Printf(tagdesc)
 					//fmt.Printf("%v\n\n", cmdshell)
-
-					fmt.Printf("开启迁移   ")
+					counts += 1
+					fmt.Printf("开启迁移%v个仓库   ", counts)
 					blue := color.New(color.FgBlue)
 					_, _ = blue.Print(changeurl)
 					fmt.Printf("   目标地址")
@@ -172,4 +178,26 @@ func Migrepoonly(url, username, password, catprojectname, dsturl, dstusername, d
 			}
 		}
 	}
+}
+
+func Getrepoonlynumber(client *harborapi.Client, ProjectID int) int {
+	repositories, err := client.GetRepositories(ProjectID)
+	//fmt.Printf("仓库名:%v, 仓库版本:%T", repositories)
+	if err != nil {
+		log.Fatalf("Error fetching repositories for project ID  %v", err)
+	}
+
+	number := 0
+	//fmt.Printf("%v项目的镜像列表:\n", catprojectname)
+	for _, repo := range repositories {
+
+		repositoriestag, err := client.GetRepositoriesTag(repo.Name)
+		//fmt.Printf("仓库名:%v, 仓库版本:%T", repositories)
+		if err != nil {
+			log.Fatal("%s存在", repositoriestag)
+		}
+		number += len(repositoriestag)
+	}
+
+	return number
 }
